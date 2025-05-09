@@ -9,13 +9,14 @@
       #thermal-pos {
         box-shadow: 0 0 0mm #eee;
         margin: 0mm;
-        max-width: 80mm;
+        max-width: 80mm; /* Ancho máximo del ticket */
         line-height: 4mm;
       }
 
       #thermal-pos h2 {
         font-size: 4mm;
         line-height: 13px;
+        margin: 1mm 0; /* Pequeño margen para los encabezados de la tabla de detalle */
       }
 
       #thermal-pos .label {
@@ -23,17 +24,28 @@
         font-size: 5mm;
         line-height: 1.3;
       }
+
+      /* Estilo para el email para que se ajuste y no se corte */
+      #thermal-pos .label b#email {
+        display: inline-block; /* Necesario para que max-width y text-align funcionen bien en un elemento inline como <b> */
+        word-wrap: break-word; /* Rompe palabras largas para evitar desbordamiento */
+        overflow-wrap: break-word; /* Alternativa estándar a word-wrap */
+        white-space: normal;   /* Asegura que el texto pueda pasar a la siguiente línea */
+        max-width: 100%;       /* Limita el ancho al del contenedor padre */
+        /* text-align: center; es heredado de .label, por lo que el texto envuelto permanecerá centrado */
+        font-size: 4mm; /* Se puede ajustar si los correos son muy largos */
+      }
+
       #thermal-pos .informasi {
         vertical-align: text-top;
         text-align: left;
-        max-width: 45mm;
+        max-width: 45mm; /* Límite para información en dos columnas */
         word-wrap: break-word;
-        font-size: 4mm; /* Asegurar consistencia en tamaño de fuente */
+        font-size: 4mm; 
       }
 
       #thermal-pos .listitem {
         font-size: 4mm;
-        height: 0mm; /* Esto podría ser problemático, revisar si es intencional */
         text-align: center;
       }
       #thermal-pos table {
@@ -41,115 +53,76 @@
         table-layout: fixed;
       }
 
-      #thermal-pos .item {
+      #thermal-pos .item { /* No parece usarse, pero se mantiene por si acaso */
         max-width: 80mm;
         font-size: 4.2mm;
         word-wrap: break-word;
         width: 100%;
       }
-      #thermal-pos .amount {
-        vertical-align: center;
-        text-align: right;
-        font-size: 4.2mm;
-      }
 
-      #thermal-pos .price {
-        vertical-align: center;
-        text-align: center;
-        font-size: 4.2mm;
-      }
-
-      #thermal-pos .desc {
-        vertical-align: center;
-        text-align: center;
-        font-size: 4.2mm;
-      }
-
-      #thermal-pos .qty {
-        vertical-align: center;
-        text-align: center;
-        font-size: 4.2mm;
-      }
-
-      #thermal-pos .Isv {
-        vertical-align: center;
-        text-align: right;
-        font-size: 4.2mm;
-      }
-      #thermal-pos .bawah {
-        margin-top: 5mm;
-        text-align: center;
-        height: 90px;
-        page-break-after: auto;
-      }
-      #thermal-pos .detail1 {
-        margin-top: 5mm;
+      #thermal-pos .detail1 { /* Para montos en la sección de totales */
+        margin-top: 1mm; /* Reducido para mejor compactación */
         text-align: right;
         page-break-after: auto;
-        font-size: 4.2mm; /* Consistencia */
+        font-size: 4.2mm; 
       }
 
-      #thermal-pos .detail {
-        margin-top: 5mm;
+      #thermal-pos .detail { /* Para etiquetas en la sección de totales */
+        margin-top: 1mm; /* Reducido para mejor compactación */
         text-align: left;
         page-break-after: auto;
-        font-size: 4.2mm; /* Consistencia */
+        font-size: 4.2mm; 
       }
 
       #all {
-        font-family: 'Courier New', Courier, monospace; /* Fuente monoespaciada para tickets */
+        font-family: 'Courier New', Courier, monospace; /* Fuente monoespaciada ideal para tickets */
       }
 
-      .mi-imagen {
-        width: 150px; /* Ajustar según necesidad */
-        height: auto; /* Mantener proporción */
-        max-width: 60mm; /* Para que no exceda el ancho del ticket */
+      .mi-imagen { /* Logo de la empresa */
+        width: 150px; 
+        height: auto; 
+        max-width: 60mm; 
+        margin-bottom: 2mm;
       }
 
       #thermal-pos .listitem td {
-        /* width: 20%; Ya se define abajo con más especificidad */
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        white-space: nowrap; /* Evita que el contenido de las celdas de items se parta en varias líneas */
+        overflow: hidden; /* Oculta el contenido que excede el ancho de la celda */
+        text-overflow: ellipsis; /* Muestra "..." si el contenido se corta */
       }
 
-      #thermal-pos .descriptions {
+      #thermal-pos .descriptions { /* Para la descripción del producto */
         width: 100%;
         text-align: left;
         font-weight: bold;
         padding-top: 1px;
         padding-bottom: 1px;
-        font-size: 4mm; /* Consistencia */
+        font-size: 4mm; 
+        white-space: normal; /* Permite que la descripción del producto ocupe varias líneas */
+        word-wrap: break-word;
       }
 
-      /* Alineación específica para cada columna */
-      #thermal-pos .listitem .qty {
-        width: 15%;
-        text-align: left;
-      }
-
-      #thermal-pos .listitem .Price,
-      #thermal-pos .listitem .Desc,
-      #thermal-pos .listitem .Isv {
-        width: 20%;
-        text-align: center;
-      }
-
-       #thermal-pos .listitem .Price, /* Precio Unitario */
-      #thermal-pos .listitem .Desc,   /* Descuento por producto */
-      #thermal-pos .listitem .Isv,    /* ISV por producto */
-      #thermal-pos .listitem .Amount { /* Monto total por producto */
-        text-align: right; /* Alineación a la derecha para montos */
-      }
-
+      /* Alineación específica para columnas de la tabla de productos */
       #thermal-pos .listitem .qty { /* Cantidad */
         width: 15%;
-        text-align: center; /* Cantidad usualmente centrada o izquierda */
+        text-align: center; 
       }
-      #thermal-pos .listitem .Price { width: 20%; }
-      #thermal-pos .listitem .Desc  { width: 20%; }
-      #thermal-pos .listitem .Isv   { width: 20%; }
-      #thermal-pos .listitem .Amount{ width: 25%; }
+      #thermal-pos .listitem .Price { /* Precio Unitario */
+        width: 20%;
+        text-align: right;
+      }
+      #thermal-pos .listitem .Desc  { /* Descuento por producto */
+        width: 20%;
+        text-align: right;
+      }
+      #thermal-pos .listitem .Isv   { /* ISV por producto */
+        width: 20%;
+        text-align: right;
+      }
+      #thermal-pos .listitem .Amount{ /* Monto total por producto */
+        width: 25%;
+        text-align: right;
+      }
 
     </style>
   </head>
@@ -159,20 +132,16 @@
         <img src="https://github.com/rimedhn/demo/blob/main/Logo.png?raw=true" alt="Logo Empresa" class="mi-imagen" onerror="this.style.display='none'" /><br />
         <b id="empresa"></b><br />
         <b id="razon"></b>
-        <div class="label">
-          <b>RTN: <span id="rtn"></span></b>
+        <div class="label"> <b>RTN: <span id="rtn"></span></b>
           <br />
         </div>
-        <div class="label">
-          <b>Dirección: <span id="direccion"></span></b>
+        <div class="label"> <b>Dirección: <span id="direccion"></span></b>
           <br />
         </div>
-        <div class="label">
-          <b>Teléfono: <span id="telefono"></span></b>
+        <div class="label"> <b>Teléfono: <span id="telefono"></span></b>
           <br />
         </div>
-        <div class="label">
-          <b id="email"></b>
+        <div class="label"> <b id="email"></b>
           <br />
         </div>
       </div>
@@ -229,20 +198,19 @@
       <div align="center">--------------------------------------------------------</div>
       <table>
         <tr>
-          <td class="informasi">Forma de pago:</td>
-          <td class="informasi" id="formapago"></td>
+          <td class="informasi" style="width: 50%;">Forma de pago:</td> <td class="informasi" style="width: 50%;" id="formapago"></td>
         </tr>
         <tr>
-          <td class="informasi">Plazo en días:</td>
-          <td class="informasi" id="plazo"></td>
+          <td class="informasi" style="width: 50%;">Plazo en días:</td>
+          <td class="informasi" style="width: 50%;" id="plazo"></td>
         </tr>
         <tr>
-          <td class="informasi">Cantidad de pagos:</td>
-          <td class="informasi" id="pagos"></td>
+          <td class="informasi" style="width: 50%;">Cantidad de pagos:</td>
+          <td class="informasi" style="width: 50%;" id="pagos"></td>
         </tr>
         <tr>
-          <td class="informasi">Cuota por pago:</td>
-          <td class="informasi">L <span id="cuota"></span></td>
+          <td class="informasi" style="width: 50%;">Cuota por pago:</td>
+          <td class="informasi" style="width: 50%;">L <span id="cuota"></span></td>
         </tr>
       </table>
       <div align="center">--------------------------------------------------------</div>
@@ -251,33 +219,37 @@
 
       <table>
         <tr>
-          <td class="informasi">O. C. Exenta:</td>
-          <td class="informasi" id="ocexe"></td>
+          <td class="informasi" style="width: 50%;">O. C. Exenta:</td>
+          <td class="informasi" style="width: 50%;" id="ocexe"></td>
         </tr>
         <tr>
-          <td class="informasi">O. C. Exonerada:</td>
-          <td class="informasi" id="ocexo"></td>
+          <td class="informasi" style="width: 50%;">O. C. Exonerada:</td>
+          <td class="informasi" style="width: 50%;" id="ocexo"></td>
         </tr>
         <tr>
-          <td class="informasi">No. Reg. SAG:</td>
-          <td class="informasi" id="nosag"></td>
+          <td class="informasi" style="width: 50%;">No. Reg. SAG:</td>
+          <td class="informasi" style="width: 50%;" id="nosag"></td>
         </tr>
       </table>
       <div align="center">--------------------------------------------------------</div>
       <div align="center" style="font-weight:bold;">Detalle</div>
       <div align="center">--------------------------------------------------------</div>
 
-      <table>
-        <tr class="listitem">
-          <td style="text-align:center;"> <h2>Cant</h2>
+      <table> <tr>
+          <td style="width: 15%; text-align:center;">
+            <h2>Cant</h2>
           </td>
-          <td style="text-align:right;"> <h2>Precio</h2>
+          <td style="width: 20%; text-align:right;">
+            <h2>Precio</h2>
           </td>
-          <td style="text-align:right;"> <h2>Desc.</h2>
+          <td style="width: 20%; text-align:right;">
+            <h2>Desc.</h2>
           </td>
-          <td style="text-align:right;"> <h2>Isv</h2>
+          <td style="width: 20%; text-align:right;">
+            <h2>Isv</h2>
           </td>
-          <td style="text-align:right;"> <h2>Monto</h2>
+          <td style="width: 25%; text-align:right;">
+            <h2>Monto</h2>
           </td>
         </tr>
       </table>
@@ -336,14 +308,14 @@
 
       <div align="center">--------------------------------------------------------</div>
 
-      <div id="montoLetras" style="text-align: center; font-size: 3.8mm; padding: 2mm 0;"></div>
+      <div id="montoLetras" style="text-align: center; font-size: 3.8mm; padding: 2mm 0; word-wrap: break-word; white-space: normal;"></div>
 
       <div align="center">--------------------------------------------------------</div>
       <div align="center" style="font-size: 3.8mm;">Gracias por su preferencia!!</div>
       <div align="center" style="font-size: 3.8mm;">Original: Cliente, Copia: Emisor</div>
       <div align="center">--------------------------------------------------------</div>
 
-      <div style="text-align: center">
+      <div style="text-align: center; margin-top: 2mm; margin-bottom: 2mm;">
         <img alt="Código de Barras" id="barcode" style="max-width: 70mm; height: auto;" />
       </div>
       <div align="center">--------------------------------------------------------</div>
@@ -351,8 +323,8 @@
         style="
           padding-top: 8px;
           text-align: center;
-          font-size: 3.5mm; /* Reducido para más información */
-          font-family: Arial, sans-serif; /* Fuente más legible para info de contacto */
+          font-size: 3.5mm; 
+          font-family: Arial, sans-serif; 
         "
       >
         <span>www.rmposhn.com</span><br />
@@ -374,23 +346,15 @@
 
       // Función para formatear números como moneda (comas para miles, punto para decimal)
       function formatCurrency(value) {
-        // Manejar null, undefined o string vacío retornando "0.00"
         if (value === null || value === undefined || String(value).trim() === "") {
           return "0.00";
         }
-
-        // Intentar parsear el valor a float. Remover comas si existen.
         const number = parseFloat(String(value).replace(/,/g, ''));
-
-        // Si el parseo falla (resulta en NaN), retornar "0.00" como fallback.
         if (isNaN(number)) {
           return "0.00";
         }
-
-        // Formatear el número: miles con coma, decimal con punto, dos decimales fijos.
         let [integerPart, decimalPart] = number.toFixed(2).split('.');
         integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        
         return integerPart + "." + (decimalPart || "00");
       }
 
@@ -412,7 +376,7 @@
       setTextContent("rtn", getUrlParameter("rtn"));
       setTextContent("direccion", getUrlParameter("direccion"));
       setTextContent("telefono", getUrlParameter("telefono"));
-      setTextContent("email", getUrlParameter("email"));
+      setTextContent("email", getUrlParameter("email")); // El email se pobla aquí
       setTextContent("tipodoc", getUrlParameter("tipodoc"));
       setTextContent("factura", getUrlParameter("factura"));
       setTextContent("date", getUrlParameter("date"));
@@ -453,24 +417,22 @@
       var amounts = getUrlParameter("amounts") ? getUrlParameter("amounts").split(",") : [];
 
       var productTable = document.getElementById("productTable");
-      if (descriptions.length > 0) {
+      if (descriptions.length > 0 && descriptions[0] !== "") { // Asegurarse que hay descripciones válidas
           for (var i = 0; i < descriptions.length; i++) {
-            // Crear una nueva fila para la descripción
             var descriptionRow = productTable.insertRow();
             descriptionRow.innerHTML = `
-            <td colspan="5" class="descriptions">${descriptions[i] || ''}</td>
-        `;
+              <td colspan="5" class="descriptions">${descriptions[i] || ''}</td>
+            `;
 
-            // Crear una nueva fila para los otros detalles
             var detailsRow = productTable.insertRow();
-            detailsRow.innerHTML = `
-            <td class="qty">${quantitys[i] || '0'}</td>
-            <td class="Price">${formatCurrency(prices[i] || '0')}</td>
-            <td class="Desc">${formatCurrency(descproductos[i] || '0')}</td>
-            <td class="Isv">${formatCurrency(isvproductos[i] || '0')}</td>
-            <td class="Amount">${formatCurrency(amounts[i] || '0')}</td>
-        `;
             detailsRow.className = "listitem"; // Aplicar clase para estilos de alineación de celdas
+            detailsRow.innerHTML = `
+              <td class="qty">${quantitys[i] || '0'}</td>
+              <td class="Price">${formatCurrency(prices[i] || '0')}</td>
+              <td class="Desc">${formatCurrency(descproductos[i] || '0')}</td>
+              <td class="Isv">${formatCurrency(isvproductos[i] || '0')}</td>
+              <td class="Amount">${formatCurrency(amounts[i] || '0')}</td>
+            `;
           }
       }
 
@@ -480,9 +442,9 @@
       if (folioParam) {
         document.getElementById("barcode").src =
           "https://barcode.tec-it.com/barcode.ashx?data=" +
-          folioParam + "&code=Code128&dpi=96"; // Añadido tipo de código y dpi para mejor visualización
+          encodeURIComponent(folioParam) + "&code=Code128&dpi=96&imagetype=Png";
       } else {
-        document.getElementById("barcode").style.display = 'none'; // Ocultar si no hay folio
+        document.getElementById("barcode").style.display = 'none'; 
       }
       
 
@@ -501,13 +463,12 @@
         function convertirGrupo(n) {
           if (n === 0) return "";
           if (n === 100) return "CIEN";
-
           let resultado = "";
           if (n >= 100) {
             resultado += centenas[Math.floor(n / 100)] + " ";
             n %= 100;
           }
-          if (n > 0) { // Solo procesar si n > 0 después de las centenas
+          if (n > 0) {
             if (n < 20) {
               resultado += unidades[n];
             } else {
@@ -531,12 +492,17 @@
           if (n === 1) return "UN MILLON";
           return convertirGrupo(n) + " MILLONES";
         }
+        
+        const numOriginal = numero; // Guardar el número original para la parte decimal
+        numero = parseFloat(numero); // Asegurarse que es un número
 
-        if (numero === 0) return "CERO LEMPIRAS";
         if (isNaN(numero)) return "VALOR INVÁLIDO";
+        if (numero === 0) return "CERO LEMPIRAS CON 00/100";
 
 
-        let [parteEntera, parteDecimal] = String(numero.toFixed(2)).split('.').map(Number);
+        let [parteEnteraStr, parteDecimalStr] = String(numOriginal.toFixed(2)).split('.');
+        let parteEntera = parseInt(parteEnteraStr, 10);
+        let parteDecimal = parseInt(parteDecimalStr || "0", 10);
         
         let resultado = "";
         let esNegativo = parteEntera < 0;
@@ -552,16 +518,11 @@
         if (miles > 0) {
           resultado += convertirMiles(miles) + " ";
         }
-        if (resto > 0 || (millones === 0 && miles === 0 && parteEntera !==0) || parteEntera === 0 ) { // Asegurar que "CERO" se maneje si es el único valor entero
-             if (parteEntera === 0 && resultado === "") { // Si es 0.xx
-                resultado = "CERO ";
-            } else if (resto > 0 || (parteEntera !== 0 && resultado === "")) {
-                 resultado += convertirGrupo(resto);
-            } else if (resto === 0 && resultado === "" && parteEntera === 0) { // Para el caso de 0.xx
-                resultado = "CERO";
-            } else {
-                 resultado += convertirGrupo(resto);
-            }
+        
+        if (parteEntera === 0) {
+            resultado = "CERO ";
+        } else if (resto > 0 || (millones === 0 && miles === 0)) {
+             resultado += convertirGrupo(resto);
         }
         
         resultado = resultado.trim();
@@ -569,31 +530,24 @@
           resultado = "MENOS " + resultado;
         }
 
-        resultado += (parteEntera === 1 && millones === 0 && miles === 0) ? " LEMPIRA" : " LEMPIRAS";
+        resultado += (parteEntera === 1 && millones === 0 && miles === 0 && resultado === "UN") ? " LEMPIRA" : " LEMPIRAS";
         
-        if (parteDecimal > 0) {
-            resultado += " CON " + (parteDecimal < 10 ? "0"+parteDecimal : parteDecimal) + "/100";
-        } else {
-            resultado += " CON 00/100";
-        }
-
+        resultado += " CON " + (parteDecimal < 10 ? "0"+parteDecimal : parteDecimal) + "/100";
 
         return resultado;
       }
 
       // Establecer monto en letras
       var rawTotalStr = getUrlParameter("total");
-      var totalForNumeroALetras = parseFloat(String(rawTotalStr).replace(/,/g, '')); // Limpiar comas por si acaso
+      var totalForNumeroALetras = parseFloat(String(rawTotalStr).replace(/,/g, '')); 
       if (isNaN(totalForNumeroALetras)) {
-        totalForNumeroALetras = 0; // Por defecto 0 si el total no es un número válido
+        totalForNumeroALetras = 0; 
       }
       document.getElementById("montoLetras").textContent = "SON: " + numeroALetras(totalForNumeroALetras);
 
       // Disparar impresión cuando la página cargue
       window.onload = function () {
-        // Podrías agregar un pequeño retraso si las imágenes o fuentes tardan en cargar
-        // setTimeout(function() { window.print(); }, 500);
-        window.print();
+         setTimeout(function() { window.print(); }, 500); // Pequeño retraso para asegurar carga de elementos
       };
     </script>
   </body>
