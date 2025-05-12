@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo de Productos por Categoría</title>
+    <title>Catálogo de Productos - Nombre Negocio</title>
     <style>
         body {
             font-family: sans-serif;
@@ -110,6 +110,13 @@
             object-fit: contain; /* Para que la imagen se ajuste sin distorsionarse */
             margin-bottom: 10px;
         }
+         .product img.error {
+            /* Estilo para imágenes que no cargan */
+            content: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij4KICAgIDxwYXRoIGZpbGw9IiNjY2MiIGQ9Ik0yMSA3VjZhMSAxIDAgMCAwLTEtMUg0YTEgMSAwIDAgMC0xIDF2MTJhMSAxIDAgMCAwIDEgMWgxNiAxIDEgMCAwIDAtMS0xVjguNDg5bDEuNjUgMS42NUExIDEgMCAwIDEgMjEgMTBoMFY3ek01IDhoMTQuNDg5bC0xLjU0NSAxLjU0NUEyIDIgMCAwIDAtMTYgMTNoMGEtMi0yIDAgMCAwIDItMlY4LjQ4OVpNOCAxNGE0IDQgMCAxIDEgMCA4IDQgNCAwIDAgMSAwLTh6bTAgNmEzIDMgMCAxIDAgMC02IDMgMyAwIDAgMCAwIDZ6TTggMTMuMjMyaDIuNzY4YTEuNSAxLjUgMCAxIDEgMCAzSDh2LTIuNzA3eiIvPgo8L3N2Zz4='); /* Icono de imagen rota o placeholder */
+             width: 50px; /* Ajusta el tamaño del icono */
+             height: auto;
+         }
+
         .product h3 {
             margin-top: 0;
             margin-bottom: 5px;
@@ -172,19 +179,16 @@
     </footer>
 
     <script>
-        // **IMPORTANTE:** Reemplaza 'YOUR_SHEET_ID' con el ID de tu Google Sheet.
-        // Este ID se encuentra en la URL de tu hoja compartida o publicada.
-        const sheetId = '1PCW0VvwvRhjYfoleJXGq_tMWyaHlCMMBzdJCQKZpRf8/edit?usp=drivesdk';
+        // **IMPORTANTE:** El sheetId obtenido de tu URL proporcionada.
+        const sheetId = '1PCW0VvwvRhjYfoleJXGq_tMWyaHlCMMBzdJCQKZpRf8';
         // Generalmente el gid es 0 para la primera hoja, ajústalo si tu catálogo está en otra hoja.
         const sheetGid = Catalago;
-        const sheetUrl = `https://docs.google.com/spreadsheets/d/${1PCW0VvwvRhjYfoleJXGq_tMWyaHlCMMBzdJCQKZpRf8/edit?usp=drivesdk}/gviz/tq?tqx=out:json&gid=${sheetGid}`;
-
-      
+        const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&gid=${sheetGid}`;
 
         const catalogElement = document.getElementById('product-catalog');
         const filterButtonsContainer = document.getElementById('filter-buttons');
 
-        let productsData = []; // Para almacenar los datos de los productos
+        let activeProductsData = []; // Para almacenar solo los datos de los productos 'Activo'
 
         fetch(sheetUrl)
             .then(response => response.text())
@@ -202,9 +206,10 @@
                 const priceIndex = columns.indexOf('Precio');
                 const skuIndex = columns.indexOf('SKU');
                 const imageIndex = columns.indexOf('Imagen');
+                const statusIndex = columns.indexOf('Estado'); // Índice del nuevo campo Estado
 
-                if (categoryIndex === -1 || titleIndex === -1 || descriptionIndex === -1 || priceIndex === -1 || skuIndex === -1 || imageIndex === -1) {
-                    console.error("Error: Asegúrate de que los encabezados de columna sean exactamente 'Categoría', 'Titulo', 'Descripción', 'Precio', 'SKU', 'Imagen'.");
+                if (categoryIndex === -1 || titleIndex === -1 || descriptionIndex === -1 || priceIndex === -1 || skuIndex === -1 || imageIndex === -1 || statusIndex === -1) {
+                    console.error("Error: Asegúrate de que los encabezados de columna sean exactamente 'Categoría', 'Titulo', 'Descripción', 'Precio', 'SKU', 'Imagen', 'Estado'.");
                     catalogElement.innerHTML = "<p>Error al cargar el catálogo. Por favor, verifica la configuración de la hoja de cálculo y los nombres de las columnas.</p>";
                     return;
                 }
@@ -214,24 +219,30 @@
                     const row = rows[i].c;
 
                      // Verificar si la fila tiene datos mínimos requeridos
-                     if (!row || row.length <= Math.max(categoryIndex, titleIndex, descriptionIndex, priceIndex, skuIndex, imageIndex) || !row[categoryIndex] || !row[categoryIndex].v || !row[titleIndex] || !row[titleIndex].v) {
+                     if (!row || row.length <= Math.max(categoryIndex, titleIndex, descriptionIndex, priceIndex, skuIndex, imageIndex, statusIndex) || !row[categoryIndex] || !row[categoryIndex].v || !row[titleIndex] || !row[titleIndex].v || !row[statusIndex] || !row[statusIndex].v) {
                          console.warn(`Saltando fila ${i + 1} debido a datos incompletos o faltantes.`);
                          continue; // Salta la fila si no tiene los datos mínimos
                      }
 
+                    const status = row[statusIndex]?.v || '';
 
-                    productsData.push({
-                        categoria: row[categoryIndex]?.v || 'Sin Categoría',
-                        titulo: row[titleIndex]?.v || 'Sin Título',
-                        descripcion: row[descriptionIndex]?.v || 'Sin descripción',
-                        precio: row[priceIndex]?.v || 'Precio no disponible',
-                        sku: row[skuIndex]?.v || 'Sin SKU',
-                        imagen: row[imageIndex]?.v || '' // URL de la imagen
-                    });
+                    // **Filtrar por Estado 'Activo'**
+                    if (status.toLowerCase() === 'activo') {
+                        activeProductsData.push({
+                            categoria: row[categoryIndex]?.v || 'Sin Categoría',
+                            titulo: row[titleIndex]?.v || 'Sin Título',
+                            descripcion: row[descriptionIndex]?.v || 'Sin descripción',
+                            precio: row[priceIndex]?.v || 'Precio no disponible',
+                            sku: row[skuIndex]?.v || 'Sin SKU',
+                            // **NOTA:** La columna Imagen debe contener URLs de imagen DIRECTAS y PÚBLICAS.
+                            // Rutas de Google Drive tipo AppSheet NO FUNCIONARÁN AQUÍ.
+                            imagen: row[imageIndex]?.v || ''
+                        });
+                    }
                 }
 
-                renderCatalog(productsData); // Renderizar el catálogo inicialmente
-                createFilterButtons(productsData); // Crear los botones de filtro
+                renderCatalog(activeProductsData); // Renderizar solo los productos activos
+                createFilterButtons(activeProductsData); // Crear los botones de filtro basados en productos activos
 
             })
             .catch(error => {
@@ -254,49 +265,62 @@
 
             // Renderizar cada categoría y sus productos
             for (const category in productsByCategory) {
-                const categoryElement = document.createElement('div');
-                categoryElement.classList.add('category');
-                 // Añadir una clase con la categoría para facilitar el filtrado
-                categoryElement.dataset.category = category.replace(/\s+/g, '-').toLowerCase();
-
-
-                const categoryTitle = document.createElement('h2');
-                categoryTitle.textContent = category;
-                categoryElement.appendChild(categoryTitle);
-
-                const catalogGridElement = document.createElement('div');
-                catalogGridElement.classList.add('catalog-grid');
-
-                productsByCategory[category].forEach(product => {
-                    const productElement = document.createElement('div');
-                    productElement.classList.add('product');
+                 // Solo renderizar si hay productos en la categoría después del filtrado
+                if (productsByCategory[category].length > 0) {
+                    const categoryElement = document.createElement('div');
+                    categoryElement.classList.add('category');
                      // Añadir una clase con la categoría para facilitar el filtrado
-                    productElement.dataset.category = product.categoria.replace(/\s+/g, '-').toLowerCase();
+                    categoryElement.dataset.category = category.replace(/\s+/g, '-').toLowerCase();
 
 
-                    productElement.innerHTML = `
-                        <img src="${product.imagen}" alt="${product.titulo}">
-                        <h3>${product.titulo}</h3>
-                        <p>${product.descripcion}</p>
-                        <p class="price">${product.precio}</p>
-                        <span class="sku">SKU: ${product.sku}</span>
-                    `;
-                    catalogGridElement.appendChild(productElement);
-                });
+                    const categoryTitle = document.createElement('h2');
+                    categoryTitle.textContent = category;
+                    categoryElement.appendChild(categoryTitle);
 
-                categoryElement.appendChild(catalogGridElement);
-                catalogElement.appendChild(categoryElement);
+                    const catalogGridElement = document.createElement('div');
+                    catalogGridElement.classList.add('catalog-grid');
+
+                    productsByCategory[category].forEach(product => {
+                        const productElement = document.createElement('div');
+                        productElement.classList.add('product');
+                         // Añadir una clase con la categoría para facilitar el filtrado
+                        productElement.dataset.category = product.categoria.replace(/\s+/g, '-').toLowerCase();
+
+
+                        productElement.innerHTML = `
+                            <img src="${product.imagen}" alt="${product.titulo}">
+                            <h3>${product.titulo}</h3>
+                            <p>${product.descripcion}</p>
+                            <p class="price">${product.precio}</p>
+                            <span class="sku">SKU: ${product.sku}</span>
+                        `;
+                         // Manejar error de carga de imagen
+                         const imgElement = productElement.querySelector('img');
+                         imgElement.onerror = function() {
+                             this.classList.add('error'); // Añade clase para mostrar icono
+                             this.alt = 'Imagen no disponible'; // Actualiza texto alternativo
+                         };
+
+
+                        catalogGridElement.appendChild(productElement);
+                    });
+
+                    categoryElement.appendChild(catalogGridElement);
+                    catalogElement.appendChild(categoryElement);
+                }
             }
         }
 
         function createFilterButtons(products) {
-            const categories = [...new Set(products.map(product => product.categoria))]; // Obtener categorías únicas
+            // Obtener categorías únicas solo de los productos activos
+            const categories = [...new Set(products.map(product => product.categoria))];
             filterButtonsContainer.innerHTML = ''; // Limpiar botones existentes
 
             // Botón "Mostrar Todos"
             const allButton = document.createElement('button');
             allButton.classList.add('filter-button', 'active');
             allButton.textContent = 'Mostrar Todos';
+            allButton.dataset.category = 'all'; // Usar un data-category para el botón "Todos"
             allButton.addEventListener('click', () => filterProducts('all'));
             filterButtonsContainer.appendChild(allButton);
 
@@ -314,7 +338,7 @@
         function filterProducts(selectedCategory) {
             const buttons = filterButtonsContainer.querySelectorAll('.filter-button');
             buttons.forEach(button => {
-                if (button.dataset.category === selectedCategory || (selectedCategory === 'all' && button.textContent === 'Mostrar Todos')) {
+                if (button.dataset.category === selectedCategory) {
                     button.classList.add('active');
                 } else {
                     button.classList.remove('active');
