@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Productos por Categoría</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        header {
+            background-color: #fff;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .business-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .business-info img {
+            max-height: 80px;
+            margin-right: 20px;
+        }
+        .business-info h1 {
+            margin: 0;
+            color: #333;
+        }
+        #welcome-message {
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        .contact-info {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .contact-info p {
+            margin: 5px 0;
+        }
+        #announcements {
+            background-color: #ffffcc;
+            padding: 15px;
+            border-left: 4px solid #ffcc00;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            color: #555;
+        }
+        .filter-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .filter-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        .filter-button:hover {
+            background-color: #0056b3;
+        }
+        .filter-button.active {
+            background-color: #28a745;
+        }
+        .category {
+            margin-bottom: 30px;
+        }
+        .category h2 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .product {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .product img {
+            max-width: 100%;
+            height: 150px; /* Altura fija para las imágenes */
+            object-fit: contain; /* Para que la imagen se ajuste sin distorsionarse */
+            margin-bottom: 10px;
+        }
+        .product h3 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            color: #0056b3;
+        }
+        .product p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .product .price {
+            font-size: 1.1em;
+            color: #28a745;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .product .sku {
+            font-size: 0.8em;
+            color: #999;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="business-info">
+            <img src="URL_DE_TU_LOGO" alt="Logotipo del Negocio">
+            <h1>Nombre de tu Negocio</h1>
+        </div>
+        <p id="welcome-message">¡Bienvenido a nuestro catálogo digital! Descubre nuestra variedad de productos.</p>
+        <div class="contact-info">
+            <p>Teléfono: XXX-XXX-XXXX</p>
+            <p>Dirección: Tu Calle, Tu Ciudad, Tu País</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="announcements">
+            **¡Anuncio Importante!** Consulta nuestras promociones especiales del mes.
+        </div>
+
+        <h2>Explora Nuestros Productos</h2>
+
+        <div class="filter-container" id="filter-buttons">
+            </div>
+
+        <div class="catalog" id="product-catalog">
+            </div>
+    </div>
+
+    <footer>
+        &copy; 2023 Nombre de tu Negocio. Todos los derechos reservados.
+    </footer>
+
+    <script>
+        // **IMPORTANTE:** Reemplaza 'YOUR_SHEET_ID' con el ID de tu Google Sheet.
+        // Este ID se encuentra en la URL de tu hoja compartida o publicada.
+        const sheetId = 'YOUR_SHEET_ID';
+        // Generalmente el gid es 0 para la primera hoja, ajústalo si tu catálogo está en otra hoja.
+        const sheetGid = 0;
+        const sheetUrl = `https://docs.google.com/spreadsheets/d/${1PCW0VvwvRhjYfoleJXGq_tMWyaHlCMMBzdJCQKZpRf8/edit?usp=drivesdk}/gviz/tq?tqx=out:json&gid=${sheetGid}`;
+
+      
+
+        const catalogElement = document.getElementById('product-catalog');
+        const filterButtonsContainer = document.getElementById('filter-buttons');
+
+        let productsData = []; // Para almacenar los datos de los productos
+
+        fetch(sheetUrl)
+            .then(response => response.text())
+            .then(data => {
+                // Google Sheets API devuelve un JSONP, necesitamos parsearlo
+                const json = JSON.parse(data.substring(47).slice(0, -2));
+
+                const rows = json.table.rows;
+                const columns = json.table.cols.map(col => col.label);
+
+                // Encontrar los índices de las columnas
+                const categoryIndex = columns.indexOf('Categoría');
+                const titleIndex = columns.indexOf('Titulo');
+                const descriptionIndex = columns.indexOf('Descripción');
+                const priceIndex = columns.indexOf('Precio');
+                const skuIndex = columns.indexOf('SKU');
+                const imageIndex = columns.indexOf('Imagen');
+
+                if (categoryIndex === -1 || titleIndex === -1 || descriptionIndex === -1 || priceIndex === -1 || skuIndex === -1 || imageIndex === -1) {
+                    console.error("Error: Asegúrate de que los encabezados de columna sean exactamente 'Categoría', 'Titulo', 'Descripción', 'Precio', 'SKU', 'Imagen'.");
+                    catalogElement.innerHTML = "<p>Error al cargar el catálogo. Por favor, verifica la configuración de la hoja de cálculo y los nombres de las columnas.</p>";
+                    return;
+                }
+
+                // Iterar sobre las filas (saltando la primera que es el encabezado) y guardar los datos
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i].c;
+
+                     // Verificar si la fila tiene datos mínimos requeridos
+                     if (!row || row.length <= Math.max(categoryIndex, titleIndex, descriptionIndex, priceIndex, skuIndex, imageIndex) || !row[categoryIndex] || !row[categoryIndex].v || !row[titleIndex] || !row[titleIndex].v) {
+                         console.warn(`Saltando fila ${i + 1} debido a datos incompletos o faltantes.`);
+                         continue; // Salta la fila si no tiene los datos mínimos
+                     }
+
+
+                    productsData.push({
+                        categoria: row[categoryIndex]?.v || 'Sin Categoría',
+                        titulo: row[titleIndex]?.v || 'Sin Título',
+                        descripcion: row[descriptionIndex]?.v || 'Sin descripción',
+                        precio: row[priceIndex]?.v || 'Precio no disponible',
+                        sku: row[skuIndex]?.v || 'Sin SKU',
+                        imagen: row[imageIndex]?.v || '' // URL de la imagen
+                    });
+                }
+
+                renderCatalog(productsData); // Renderizar el catálogo inicialmente
+                createFilterButtons(productsData); // Crear los botones de filtro
+
+            })
+            .catch(error => {
+                console.error('Error al obtener los datos de Google Sheets:', error);
+                catalogElement.innerHTML = "<p>Error al cargar el catálogo. Por favor, intenta más tarde.</p>";
+            });
+
+        function renderCatalog(productsToRender) {
+            catalogElement.innerHTML = ''; // Limpiar el catálogo actual
+
+            // Agrupar productos por categoría
+            const productsByCategory = productsToRender.reduce((acc, product) => {
+                const category = product.categoria;
+                if (!acc[category]) {
+                    acc[category] = [];
+                }
+                acc[category].push(product);
+                return acc;
+            }, {});
+
+            // Renderizar cada categoría y sus productos
+            for (const category in productsByCategory) {
+                const categoryElement = document.createElement('div');
+                categoryElement.classList.add('category');
+                 // Añadir una clase con la categoría para facilitar el filtrado
+                categoryElement.dataset.category = category.replace(/\s+/g, '-').toLowerCase();
+
+
+                const categoryTitle = document.createElement('h2');
+                categoryTitle.textContent = category;
+                categoryElement.appendChild(categoryTitle);
+
+                const catalogGridElement = document.createElement('div');
+                catalogGridElement.classList.add('catalog-grid');
+
+                productsByCategory[category].forEach(product => {
+                    const productElement = document.createElement('div');
+                    productElement.classList.add('product');
+                     // Añadir una clase con la categoría para facilitar el filtrado
+                    productElement.dataset.category = product.categoria.replace(/\s+/g, '-').toLowerCase();
+
+
+                    productElement.innerHTML = `
+                        <img src="${product.imagen}" alt="${product.titulo}">
+                        <h3>${product.titulo}</h3>
+                        <p>${product.descripcion}</p>
+                        <p class="price">${product.precio}</p>
+                        <span class="sku">SKU: ${product.sku}</span>
+                    `;
+                    catalogGridElement.appendChild(productElement);
+                });
+
+                categoryElement.appendChild(catalogGridElement);
+                catalogElement.appendChild(categoryElement);
+            }
+        }
+
+        function createFilterButtons(products) {
+            const categories = [...new Set(products.map(product => product.categoria))]; // Obtener categorías únicas
+            filterButtonsContainer.innerHTML = ''; // Limpiar botones existentes
+
+            // Botón "Mostrar Todos"
+            const allButton = document.createElement('button');
+            allButton.classList.add('filter-button', 'active');
+            allButton.textContent = 'Mostrar Todos';
+            allButton.addEventListener('click', () => filterProducts('all'));
+            filterButtonsContainer.appendChild(allButton);
+
+            // Botones por categoría
+            categories.forEach(category => {
+                const button = document.createElement('button');
+                button.classList.add('filter-button');
+                button.textContent = category;
+                button.dataset.category = category.replace(/\s+/g, '-').toLowerCase(); // Guardar categoría en el data attribute
+                button.addEventListener('click', () => filterProducts(category.replace(/\s+/g, '-').toLowerCase()));
+                filterButtonsContainer.appendChild(button);
+            });
+        }
+
+        function filterProducts(selectedCategory) {
+            const buttons = filterButtonsContainer.querySelectorAll('.filter-button');
+            buttons.forEach(button => {
+                if (button.dataset.category === selectedCategory || (selectedCategory === 'all' && button.textContent === 'Mostrar Todos')) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+
+            const categories = catalogElement.querySelectorAll('.category');
+            categories.forEach(categoryElement => {
+                 const categoryName = categoryElement.dataset.category;
+                if (selectedCategory === 'all' || categoryName === selectedCategory) {
+                    categoryElement.style.display = 'block'; // Mostrar la categoría
+                     // Mostrar todos los productos dentro de la categoría visible (importante para el caso 'all')
+                    const productsInCategory = categoryElement.querySelectorAll('.product');
+                     productsInCategory.forEach(productElement => {
+                         productElement.style.display = 'flex';
+                     });
+                } else {
+                    categoryElement.style.display = 'none'; // Ocultar la categoría
+                }
+            });
+
+            // Si se seleccionó una categoría específica, asegurar que solo los productos de esa categoría sean visibles
+             if (selectedCategory !== 'all') {
+                 categories.forEach(categoryElement => {
+                     const categoryName = categoryElement.dataset.category;
+                     const productsInCategory = categoryElement.querySelectorAll('.product');
+                     productsInCategory.forEach(productElement => {
+                        if (categoryName === selectedCategory) {
+                             productElement.style.display = 'flex'; // Mostrar productos de la categoría seleccionada
+                        } else {
+                             productElement.style.display = 'none'; // Ocultar productos de otras categorías (redundante si la categoría está oculta, pero buena práctica)
+                        }
+                     });
+                 });
+             }
+        }
+
+    </script>
+
+</body>
+</html>
