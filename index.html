@@ -7,54 +7,96 @@
     body {
       font-family: Arial, sans-serif;
       margin: 30px;
+      background-color: #f9f9f9;
     }
-    table {
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .galeria {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .card {
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      width: 250px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .card img {
       width: 100%;
-      border-collapse: collapse;
+      height: 180px;
+      object-fit: cover;
     }
-    th, td {
-      padding: 12px;
-      border: 1px solid #ccc;
-      text-align: left;
+    .card-content {
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    th {
-      background-color: #f2f2f2;
+    .titulo {
+      font-size: 18px;
+      font-weight: bold;
     }
-    img {
-      max-width: 100px;
+    .categoria {
+      font-size: 14px;
+      color: #777;
+    }
+    .descripcion {
+      font-size: 14px;
+      color: #333;
+    }
+    .precio {
+      font-size: 16px;
+      color: green;
+      font-weight: bold;
+    }
+    .estado {
+      font-size: 13px;
+      color: #555;
     }
   </style>
 </head>
 <body>
   <h1>Catálogo del Supermercado</h1>
-  <table id="catalogo"></table>
+  <div class="galeria" id="galeria"></div>
 
   <script>
-    const URL = 'https://docs.google.com/spreadsheets/d/1NQE9pPv3uJY4E8tNw5d0ls1QZRM5Ofj9xzhURAgyJq0/edit?usp=sharing'; // <-- Reemplaza este enlace
+    const URL = 'https://docs.google.com/spreadsheets/d/1NQE9pPv3uJY4E8tNw5d0ls1QZRM5Ofj9xzhURAgyJq0/edit?usp=sharing'; // <-- Reemplaza con tu enlace real
 
     fetch(URL)
       .then(res => res.text())
       .then(data => {
         const rows = data.trim().split('\n');
-        const table = document.getElementById('catalogo');
-        rows.forEach((row, index) => {
-          const cols = row.split(',');
-          const tr = document.createElement('tr');
+        const galeria = document.getElementById('galeria');
 
-          cols.forEach((col, i) => {
-            const cell = document.createElement(index === 0 ? 'th' : 'td');
-            if (index > 0 && i === 2) {
-              // Si es columna de imagen
-              const img = document.createElement('img');
-              img.src = col;
-              cell.appendChild(img);
-            } else {
-              cell.textContent = col;
-            }
-            tr.appendChild(cell);
-          });
+        const headers = rows[0].split(','); // No se usa directamente, pero puedes usarlo si lo deseas
+        const productos = rows.slice(1); // Ignora encabezados
 
-          table.appendChild(tr);
+        productos.forEach(row => {
+          const [categoria, titulo, descripcion, precio, imagen, estado] = row.split(',');
+
+          const card = document.createElement('div');
+          card.className = 'card';
+
+          card.innerHTML = `
+            <img src="${imagen}" alt="${titulo}">
+            <div class="card-content">
+              <div class="titulo">${titulo}</div>
+              <div class="categoria">${categoria}</div>
+              <div class="descripcion">${descripcion}</div>
+              <div class="precio">${precio}</div>
+              <div class="estado">${estado}</div>
+            </div>
+          `;
+
+          galeria.appendChild(card);
         });
       });
   </script>
