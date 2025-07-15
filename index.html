@@ -195,8 +195,15 @@
         fetch(sheetUrl)
             .then(response => response.text())
             .then(data => {
-                // Google Sheets API devuelve un JSONP, necesitamos parsearlo
-                const json = JSON.parse(data.substring(47).slice(0, -2));
+                const match = data.match(/google\.visualization\.Query\.setResponse\((.*)\);/);
+if (match && match[1]) {
+    const json = JSON.parse(match[1]);
+    // ... el resto de tu código
+} else {
+    console.error("No se pudo parsear la respuesta de Google Sheets. Formato inesperado.");
+    catalogElement.innerHTML = "<p>Error al cargar el catálogo: formato de datos inesperado.</p>";
+    return;
+}
 
                 const rows = json.table.rows;
                 const columns = json.table.cols.map(col => col.label);
