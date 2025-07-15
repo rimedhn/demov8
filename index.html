@@ -209,16 +209,16 @@ if (match && match[1]) {
                 const columns = json.table.cols.map(col => col.label);
 
                 // Encontrar los índices de las columnas
-                const categoryIndex = columns.indexOf('Categoría');
+                const categoryIndex = columns.indexOf('Categoria');
                 const titleIndex = columns.indexOf('Titulo');
-                const descriptionIndex = columns.indexOf('Descripción');
+                const descriptionIndex = columns.indexOf('Descripcion');
                 const priceIndex = columns.indexOf('Precio');
                 const skuIndex = columns.indexOf('SKU');
                 const imageIndex = columns.indexOf('Imagen');
                 const statusIndex = columns.indexOf('Estado'); // Índice del nuevo campo Estado
 
                 if (categoryIndex === -1 || titleIndex === -1 || descriptionIndex === -1 || priceIndex === -1 || skuIndex === -1 || imageIndex === -1 || statusIndex === -1) {
-                    console.error("Error: Asegúrate de que los encabezados de columna sean exactamente 'Categoría', 'Titulo', 'Descripción', 'Precio', 'SKU', 'Imagen', 'Estado'.");
+                    console.error("Error: Asegúrate de que los encabezados de columna sean exactamente 'Categoria', 'Titulo', 'Descripcion', 'Precio', 'SKU', 'Imagen', 'Estado'.");
                     catalogElement.innerHTML = "<p>Error al cargar el catálogo. Por favor, verifica la configuración de la hoja de cálculo y los nombres de las columnas.</p>";
                     return;
                 }
