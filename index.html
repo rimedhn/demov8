@@ -80,7 +80,7 @@
         const productos = rows.slice(1); // Ignora encabezados
 
         productos.forEach(row => {
-          const [categoria, titulo, descripcion, precio, imagen, sku, estado] = row.split(',');
+          const [categoria, titulo, descripcion, precio, sku, imagen, estado] = row.split(',');
 
           const card = document.createElement('div');
           card.className = 'card';
